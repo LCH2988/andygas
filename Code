@@ -1,0 +1,518 @@
+var spreadSheetConfig = SpreadsheetApp.getActiveSpreadsheet(); // 連結此試算表
+var sheetConfig = spreadSheetConfig.getSheetByName("參數設定");  // 連結此試算表的「參數設定」工作表
+var sheetConfigData = sheetConfig.getRange(1, 2, sheetConfig.getLastRow(), 1).getValues();  // 取出「參數設定」工作表內的所有資料
+var CHANNEL_ACCESS_TOKEN = sheetConfigData[0][0].replace(/\r?\n|\r/g, ""); // 取得「參數設定」工作表內所記錄的 Line Developers Channel Access Token
+
+//Code.gs
+var nowTime = new Date();
+var year = nowTime.getFullYear();
+var month = append1Zero(nowTime.getMonth() + 1);
+var date = append1Zero(nowTime.getDate());
+var hours = append1Zero(nowTime.getHours());
+var minutes = append1Zero(nowTime.getMinutes());
+var prefixFileName2 = year + month + date + hours + minutes;
+
+function append1Zero(obj) {
+  if (obj < 10) { return "0" + obj.toString(); }
+  else { return obj.toString(); }
+}
+
+// function doGet() {
+//   var html = HtmlService.createTemplateFromFile("index").evaluate().setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+//   return html;
+// }
+
+ function doGet() {
+    return HtmlService.createHtmlOutputFromFile('index')
+      .setTitle('LIFF App')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  }
+
+
+// 在 doPost 中添加儲存使用者資訊的部分
+function doPost(e) {
+  var events = JSON.parse(e.postData.contents).events;
+  for (var i = 0; i < events.length; i++) {
+    var event = events[i];
+    if (event.type == 'message' && event.message.type == 'text') {
+      var message = event.message.text;
+      var replyToken = event.replyToken;
+      var groupId = event.source.groupId;
+      var userId = event.source.userId;
+      var userName = getUserProfile(userId).displayName; // 使用者名稱
+      var groupName = getGroupName(groupId);
+
+
+
+      if (message == "000") {
+        replyMessage(replyToken, userName + "\n【ID】: " + userId + "\n【群組】: " + groupName + "\n【群組ID】: " + groupId);
+      }
+
+
+      if (message == "111") {
+        sendFlexMessage(replyToken,userId, userName);
+      }
+    }
+  }
+}
+
+function sendFlexMessage(replyToken, userId, userName) {
+  var flexMessage = {
+    "type": "flex",
+    "altText": "購物車",
+    "contents": {
+      "type": "bubble",
+      "header": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "福氣補給站",
+            "weight": "bold",
+            "size": "xl"
+          }
+        ]
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "點擊下方按鈕前往購物網站",
+            "weight": "bold",
+            "size": "lg"
+          }
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "button",
+            "style": "primary",
+            "action": {
+              "type": "uri",
+              "label": "前往購物網站",
+              "uri": `https://lch2988.github.io/goshopping/Blessing.html?userId=${userId}&userName=${encodeURIComponent(userName)}`
+            }
+          }
+        ]
+      }
+    }
+  };
+
+  var payload = {
+    "replyToken": replyToken,
+    "messages": [flexMessage]
+  };
+
+  UrlFetchApp.fetch('https://api.line.me/v2/bot/message/reply', {
+    'method': 'post',
+    'headers': {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN
+    },
+    'payload': JSON.stringify(payload)
+  });
+}
+
+
+function sendFlexMessage(replyToken, userId, userName) {
+
+  var flexMessage = {
+    "type": "flex",
+    "altText": "購物車",
+    "contents": {
+      "type": "bubble",
+      "header": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "福氣補給站",
+            "weight": "bold",
+            "size": "xl"
+          }
+        ]
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "contents": [
+          {
+            "type": "text",
+            "text": "點擊下方按鈕前往購物網站",
+            "weight": "bold",
+            "size": "lg"
+          }
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "sm",
+        "contents": [
+          {
+            "type": "button",
+            "style": "primary",
+            "action": {
+              "type": "uri",
+              "label": "前往購物網站",
+              "uri": `https://lch2988.github.io/goshopping/Blessing.html?userId=${userId}&userName=${encodeURIComponent(userName)}`
+            }
+          }
+        ]
+      }
+    }
+  };
+
+  var payload = {
+    "replyToken": replyToken,
+    "messages": [flexMessage]
+  };
+
+  UrlFetchApp.fetch('https://api.line.me/v2/bot/message/reply', {
+    'method': 'post',
+    'headers': {
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN
+    },
+    'payload': JSON.stringify(payload)
+  });
+}
+
+
+
+
+
+
+function getProductsA(userId, userName, groupId, groupName) {
+  var datalineA = [userId, userName, groupId, groupName];
+  var datalineB = [];
+  for (var i = 0; i < datalineA.length; i++) {
+    datalineB.push({
+      userId: userId[i][0],
+      userName: userName[i][1],
+      groupId: groupId[i][2],
+      groupName: groupName[i][3]
+    });
+  }
+  return datalineB;
+}
+
+
+
+// 獲取使用者資訊
+function getUserInfo(userId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('#A_會員名單'); // 更改為您的試算表中的工作表名稱
+  var lastRow = sheet.getLastRow();
+  var userInfo = sheet.getRange(lastRow, 1, 1, 2).getValues()[0];
+  return { userId: userInfo[0], userName: userInfo[1] };
+}
+
+
+
+
+
+//  <登入系統============================================================================================登入系統>
+// 驗證帳號、密碼
+
+
+var data2name = "";
+function loginUser(phone) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('#A_會員名單');
+  var data = sheet.getDataRange().getValues();
+
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][6].toString().trim() === "H" + phone.trim()) {
+
+      return true; // 登入成功
+    }
+  }
+
+  return false; // 登入錯誤
+}
+//  <登入系統============================================================================================登入系統>
+
+
+
+//  <註冊系統============================================================================================註冊系統>
+// Code.gs
+
+var data2name = "";
+function getData(phone) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ws = ss.getSheetByName("#A_會員名單");
+  var data = ws.getRange("A2:I").getValues(); // 假设电话号码在第7列（索引为6）
+  for (var i = 0; i < data.length; i++) {
+    var phoneNumber = data[i][6]; // 电话号码所在列的值
+    if (phoneNumber == "H" + phone) {
+      data2name = data[i][4];
+    }
+    return data2name;
+  }
+}
+
+
+// 检查电话号码是否已被注册
+function checkDuplicatePhoneNumber(phoneN) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ws = ss.getSheetByName("#A_會員名單");
+  var data = ws.getRange("A2:I").getValues(); // 假设电话号码在第7列（索引为6）
+  for (var i = 0; i < data.length; i++) {
+    var phoneNumber = data[i][6]; // 电话号码所在列的值
+    if (phoneNumber == phoneN) {
+      return true; // 找到重复的电话号码
+    }
+  }
+  return false; // 未找到重复的电话号码
+}
+
+
+
+function addData(rowData) {
+  var currentDate = new Date();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  // var sheet2 = ss.getSheetByName("#B_首頁設定");
+  // var itemDetails = ['A2', 'B2', 'C2', 'D2', 'E2', 'F2', 'G2', 'I2', 'J2'].reduce((details, cell) => {
+  //   details[cell] = sheet2.getRange(cell).getValue();
+  //   return details;
+  // }, {});
+
+  var phoneN = "H" + rowData.set4;
+
+  var ws = ss.getSheetByName("#A_會員名單");
+  // 检查电话号码是否已存在
+
+
+  // 如果电话号码不存在重复，则执行添加数据操作
+  var Lrow = ws.getLastRow() - 1;
+  if (rowData.set4 !== "" && rowData.set5 !== "") {
+    ws.appendRow(["", "", "", "", rowData.set3, "", "H" + rowData.set4, "K" + rowData.set5, currentDate]);
+    return "註冊成功！";
+  }
+}
+
+//  <註冊系統============================================================================================註冊系統>
+
+
+
+function getProducts() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Products');
+  var data = sheet.getDataRange().getValues();
+  var products = [];
+
+  for (var i = 1; i < data.length; i++) {
+    products.push({
+      id: data[i][0],
+      name: data[i][1],
+      spsetA: data[i][2],
+      price: data[i][3],
+      image: data[i][4]
+    });
+  }
+
+  return products;
+}
+
+
+
+function getOrderDetails(phone) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cart');
+  const data = sheet.getDataRange().getValues();
+  const orderDetails = [];
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][5] === "H" + phone) {
+      orderDetails.push(data[i]);
+    }
+  }
+
+  return orderDetails.length > 0 ? orderDetails : null; // 如果找到訂單, 返回訂單詳細項目; 否則返回 null
+}
+
+
+
+// 生成獨立的訂單編號
+function generateOrderNumber() {
+  var nowTime = new Date();
+  var year = nowTime.getFullYear();
+  var month = append1Zero(nowTime.getMonth() + 1);
+  var date = append1Zero(nowTime.getDate());
+  var hours = append1Zero(nowTime.getHours());
+  var minutes = append1Zero(nowTime.getMinutes());
+  var seconds = append1Zero(nowTime.getSeconds());
+
+  return `訂單編號#${year}${month}${date}${hours}${minutes}${seconds}`;
+}
+
+function append1Zero(obj) {
+  if (obj < 10) {
+    return "0" + obj.toString();
+  } else {
+    return obj.toString();
+  }
+}
+
+function saveCartToSpreadsheet(cart, currentOrderNumber, phone) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cart');
+
+  // 添加訂單編號
+  //sheet.appendRow([orderNumber]);
+
+  // 添加訂單詳細項目
+  cart.forEach(item => {
+    const itemTotal = roundToInteger(item.price) * item.quantity;
+    sheet.appendRow([currentOrderNumber, item.name, item.price, item.quantity, itemTotal, "H" + phone]);
+  });
+}
+
+function saveCart() {
+  var phone = document.getElementById('phone').value;
+  if (cartItems.length > 0) {
+    const currentOrderNumber = generateOrderNumber();
+    var button = document.getElementById('btnbtnA1');
+    if (button) {
+      button.innerHTML = '訂單完成';
+      button.disabled = true;
+      button.classList.add('added');
+      button.style.backgroundColor = '#ff1493';
+    }
+    alert(`您的訂單已送出，訂單編號為 #${currentOrderNumber}`);
+    google.script.run.withSuccessHandler().saveCartToSpreadsheet(cartItems, currentOrderNumber, phone);
+  } else {
+    alert('購物車是空的');
+  }
+}
+
+
+
+function roundToInteger(num) {
+  return Math.round(num);
+}
+
+
+
+function getOrderData(memberID) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cart');
+  var data = sheet.getDataRange().getValues();
+  const result = [];
+
+  data.forEach((row, index) => {
+    if (index !== 0 && row[5] === memberID) {  // 跳過標題行
+      result.push({
+        orderId: row[0],
+        productName: row[1],
+        price: row[2],
+        quantity: row[3],
+        total: row[4],
+        paymentMethod: row[6],  // 假設第7列包含支付方式
+        paymentConfirmed: row[7] === '已確認'  // 假設第8列包含付款確認
+      });
+    }
+  });
+  return result;
+}
+
+function savePaymentMethod(orderId, paymentMethod) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cart');
+  const data = sheet.getDataRange().getValues();
+
+  data.forEach((row, index) => {
+    if (index !== 0 && row[0] === orderId) {  // 跳過標題行
+      sheet.getRange(index + 1, 7).setValue(paymentMethod);  // 更新支付方式列
+    }
+  });
+}
+
+
+function confirmPayment(orderId) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Cart');
+  const data = sheet.getDataRange().getValues();
+
+  data.forEach((row, index) => {
+    if (index !== 0 && row[0] === orderId) {  // 跳過標題行
+      sheet.getRange(index + 1, 8).setValue('已確認');  // 更新付款確認列
+    }
+  });
+}
+
+
+// 從 LINE 平台獲取使用者資訊
+function getUserProfile(userId) {
+  var url = 'https://api.line.me/v2/bot/profile/' + userId;
+  var headers = {
+    'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN,
+  };
+  var options = {
+    'method': 'get',
+    'headers': headers,
+  };
+  var response = UrlFetchApp.fetch(url, options);
+  var userProfile = JSON.parse(response.getContentText());
+  return userProfile;
+}
+
+
+function getGroupName(groupId) {
+  var url = "https://api.line.me/v2/bot/group/" + groupId + "/summary";
+  var headers = {
+    "Authorization": 'Bearer ' + CHANNEL_ACCESS_TOKEN
+  };
+  var options = {
+    "method": "get",
+    "headers": headers
+  };
+  var response = UrlFetchApp.fetch(url, options);
+  var data = JSON.parse(response.getContentText());
+  return data.groupName;
+}
+
+
+function replyMessage(replyToken, message) {
+  var url = 'https://api.line.me/v2/bot/message/reply';
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN
+  };
+  var postData = {
+    'replyToken': replyToken,
+    'messages': [{
+      'type': 'text',
+      'text': message
+    }]
+  };
+  var options = {
+    'method': 'post',
+    'headers': headers,
+    'payload': JSON.stringify(postData)
+  };
+  UrlFetchApp.fetch(url, options);
+}
+
+
+
+// 回覆 Flex Message 的函數
+function replyFlexMessage(replyToken, flexMessage) {
+  var url = 'https://api.line.me/v2/bot/message/reply';
+  var headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + CHANNEL_ACCESS_TOKEN
+  };
+  var postData = {
+    'replyToken': replyToken,
+    'messages': [flexMessage]
+  };
+  var options = {
+    'method': 'post',
+    'headers': headers,
+    'payload': JSON.stringify(postData)
+  };
+  UrlFetchApp.fetch(url, options);
+}
+
