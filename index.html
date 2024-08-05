@@ -1,35 +1,1018 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <base target="_top">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-on.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>報名表單</title>
-    <style type="text/css">
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js">
+      <style>
+    .container {
+      margin: 20px;
     }
 
-    body {
-      height: 100%;
-    }
-
-    iframe {
-      display: block;
+    table {
       width: 100%;
-      height: 100%;
-      border: none;
-      overflow-y: auto;
-      overflow-x: hidden;
+      border-collapse: collapse;
+    }
+
+    table,
+    th,
+    td {
+      border: 1px solid black;
+    }
+
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #ffdead;
+    }
+
+    .order-details {
+      display: none;
+    }
+
+    .confirmed {
+      background-color: #d4edda;
+      /* 绿色背景，表示已确认付款 */
+    }
+
+    .not-confirmed {
+      background-color: #f8d7da;
+      /* 红色背景，表示未确认付款 */
+    }
+
+
+    .product-container {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+    }
+
+    .product {
+      flex: 0 0 auto;
+      width: 300px;
+      /* 調整產品卡片寬度 */
+      scroll-snap-align: center;
+    }
+
+    .product img {
+      max-width: 100%;
+      height: auto;
+      cursor: pointer;
+    }
+
+
+    .product {
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: inline-block;
+      margin: 10px;
+      text-align: center;
+    }
+
+    .product img {
+      max-width: 200px;
+      height: auto;
+    }
+
+    #cart {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    #cart-items {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    #cart-items li {
+      margin-bottom: 5px;
+    }
+
+    .quantity-input {
+      width: 80px;
+      /* 設定寬度為 250 像素 */
+      padding: 2px;
+      /* 添加一些內邊距 */
+    }
+
+    /* 新增按壓效果和顏色變化 */
+    .btn-btn-primary {
+      background-color: green;
+      color: white;
+      max-width: 350px;
+      height: auto;
+      cursor: pointer;
+      ont-size: 25px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-btn-primary:hover,
+    .btn-btn-primary:active {
+      background-color: #ff7f50;
+      color: black;
     }
   </style>
 </head>
+
 <body>
- <iframe src="https://script.google.com/macros/s/AKfycbxYOyY_pUg0lp1C5Mp-gx0ye7WLrAFO9AxA0ZhCBOMEvHPna_2_89ceBVvKhbn08isX/exec" frameborder="0" marginheight="0" marginwidth="0" scrolling="auto"></iframe>
-</body>
+  <base target="_top">
+  <title>LINE 使用者資訊</title>
+
+  <div>
+    <p>LINE使用者ID: <span id="user-id"></span></p>
+    <p>LINE使用者名稱: <span id="user-name"></span></p>
+  </div>
+
+  <div class="container" id="loginFormB"
+    style="display: none; background-color: #7fffd4; max-width: 550px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center">⭐️ 福氣補給站 ⭐️</h1>
+    <button type="button" onclick="allonclickA()" onmouseup="this.style.backgroundColor='green'" onmousedown="this.style.backgroundColor='#ff0000'"
+      style="font-size: 35px; text-align: center; max-width: 550px; background-color: #00bfff; color: white; border-radius: 8px;">前往購物!!</button>
+    <button type="button" onclick="searchOrders()" onmouseup="this.style.backgroundColor='green'" onmousedown="this.style.backgroundColor='#ff0000'"
+      style="font-size: 35px; text-align: center; max-width: 550px; background-color: #00bfff; color: white; border-radius: 8px;">訂單查尋!!</button>
+    <div id="result"
+      style="display: block; background-color: #afeeee; max-width: 550px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    </div>
+    <h1 class="text-center" style="font-size: 20px; text-align: right;"> 小編 : 彤彤爸 </h1>
+  </div>
+
+  <div class="container" id="loginFormB2"
+    style="display: none; background-color: #7fffd4; max-width: 550px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center">⭐️ 福氣補給站 ⭐️</h1>
+    <button type="button" onclick="searchOrders()" onmouseup="this.style.backgroundColor='green'" onmousedown="this.style.backgroundColor='#ff0000'"
+      style="font-size: 35px; text-align: center; max-width: 350px; background-color: #00bfff; color: white; border-radius: 8px;">訂單查尋!!</button>
+    <div id="result"
+      style="display: block; background-color: #afeeee; max-width: 550px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    </div>
+    <h1 class="text-center" style="font-size: 20px; text-align: right;"> 小編 : 彤彤爸 </h1>
+  </div>
+
+  <div class="container" id="loginFormB2"
+    style="display: none; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center" id="userName">您好\+\</h1>
+     <input type="text" id="memberInput" placeholder="輸入名字" value="${currentA2Value}" style="font-size: 18px; color: #0000cd; line-height: 0.5; font-weight: bold; border-radius: 8px;">
+    <h1 class="text-center"> 歡迎進入 </h1>
+    <h1 class="text-center">⭐️ 福氣補給站 ⭐️</h1>
+  </div>
+
+  <div class="container" id="loginFormA"
+    style="display: block; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center">⭐️ 登入訂購系統 ⭐️</h1>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label for="phone" class="form-label" style="font-size: 25px; border-radius: 8px;">帳號</label>
+        <input type="tel" class="form-control" id="phone" required style="font-size: 25px;">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label" style="font-size: 25px; border-radius: 8px;">密碼</label>
+        <input type="tel" class="form-control" id="password" required style="font-size: 25px;">
+      </div>
+      <br>
+      <button type="submit" id="loginButton" onmousedown="background-color:'#ff0000'" style="font-size: 25px; max-width: 350px; background-color: green; color: white; border-radius: 8px;">登入</button>
+      <br>
+      <h2>⭕️ 新會員請先註冊</h2>
+      <button type="button" onclick="allonclickE()"
+        style="font-size: 25px; max-width: 350px; background-color: green; color: white; border-radius: 8px;">註冊</button>
+      <!-- <h2>⭕️ 訂單查詢</h2>
+      <button type="button" onclick="allonclickC()"
+        style="font-size: 25px; max-width: 350px; background-color: green; color: white; border-radius: 8px;">個人訂單查詢</button> -->
+    </form>
+  </div>
+
+  <form id="signupForm"
+    style="display: none; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+
+    <h2>✅帳號 ： </h2>
+    <h2>【多特瑞ID】</h2>
+    <input type="tel" id="set4" name="set4"
+      style="color: blue; font-size: 25px; margin-bottom: 5px; font-weight: bold;">
+    <h2>【密碼】</h2>
+    <input type="tel" id="set5" name="set5"
+      style="color: blue; font-size: 25px; margin-bottom: 5px; font-weight: bold;">
+    <button type="button" onclick="allonclick()" class="btn-btn-primary"
+      style="font-size: 25px; background-color: green; color: white; border-radius: 8px;">確認</button>
+    <button type="button" onclick="allonclickD()" class="btn-btn-primary"
+      style="font-size: 25px; background-color: green; color: white; border-radius: 8px;">返回登入</button>
+  </form>
+
+  <div id="member-name" style="display: none;">
+  </div>
+  <div id="products" style="display: none;">
+  </div>
+
+  <div class="container" id="productsB"
+    style="display: none; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 class="text-center">⭐️ 已加入購物車 ⭐️</h1>
+    <button type="button" onclick="allonclickA()" class="btn-btn-primary"
+      style="font-size: 35px; text-align: center; max-width: 350px; background-color: #00bfff; color: white; border-radius: 8px;">健康~ GO !!</button>
+    <h1 class="text-center" style="font-size: 20px; text-align: right;"> 小編 : 彤彤爸 </h1>
+  </div>
+
+  <div id="cart"
+    style="display: none; background-color: #ffc0cb; max-width: 600px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1>購物車</h1>
+
+    <ul id="cart-items"></ul>
+    <p id="total" style="font-size: 25px;  color: #ff0000; ">總計: $0</p>
+
+    <button onclick="allonclickA()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #ff8c00; color: white; border-radius: 8px;">繼續購物</button>
+    <button onclick="saveCart()" id="btnbtnA1" style="font-size: 25px; max-width: 350px; background-color: #ff1493; color: white; border-radius: 8px;">結單訂購</button>
+    <button onclick="allonclickF()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #00bfff; color: white; border-radius: 8px;">訂單查詢</button>
+    <button onclick="clearCart()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: green; color: white; border-radius: 8px;">清購物車</button>
+  </div>
+
+
+
+
+  <!-- <div id="order-lookup"
+    style="display: none; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h3>查詢訂單</h3>
+    <input type="text" id="order-number-input" placeholder="輸入會員ID" style="color: blue; font-size: 25px; margin-bottom: 5px; font-weight: bold; border-radius: 8px;">
+    <br>
+    <button onclick="lookupOrder()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #00bfff; color: white; border-radius: 8px;">查詢</button>
+    <div id="order-details"
+      style="display: block; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    </div>
+    <button onclick="allonclickA()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #00bfff; color: white; border-radius: 8px;">前往購物</button>
+  </div> -->
+
+
+  <!-- <div class="container">
+    <h1>訂單查詢</h1>
+    <label for="memberID">會員ID:</label>
+    <input type="text" id="memberID" name="memberID">
+    <button onclick="searchOrders()">查詢</button>
+
+    <div id="result"></div>
+  </div> -->
+
+
+  <div id="order-lookup"
+    style="display: none; background-color: #ffc0cb; max-width: 600px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h3>管理員專用</h3>
+    <input type="text" id="memberID2" placeholder="會員ID" style="color: blue; font-size: 25px; margin-bottom: 5px; font-weight: bold; border-radius: 8px;">
+    <br>
+    <button onclick="searchOrders()" class="btn-btn-primary" style="font-size: 25px; max-width: 550px; background-color: #00bfff; color: white; border-radius: 8px;">查詢</button>
+    <div id="result"
+      style="display: block; background-color: #ffc0cb; max-width: 350px; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    </div>
+    <button onclick="allonclickA()" class="btn-btn-primary" style="font-size: 25px; max-width: 550px; background-color: #00bfff; color: white; border-radius: 8px;">回首頁</button>
+  </div>
+
+
+
+  <script>
+        function initializeLiff(myLiffId) {
+          liff
+            .init({
+              liffId: myLiffId
+            })
+            .then(() => {
+              if (!liff.isLoggedIn()) {
+                liff.login();
+              } else {
+                getUserProfile();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+
+        function getUserProfile() {
+          liff.getProfile()
+            .then(profile => {
+              document.getElementById("userId").innerHTML = 'User ID: ' + profile.userId;
+              document.getElementById("displayName").innerHTML = 'Display Name: ' + profile.displayName;
+            })
+            .catch((err) => {
+              console.log('error', err);
+            });
+        }
+
+        // 替換 "YOUR_LIFF_ID" 為您的實際 LIFF ID
+        initializeLiff("YOUR_LIFF_ID");
+    
+
+    function displayLineUserInfo() {
+    var urlParams = new URLSearchParams(window.location.search);
+    var userId = urlParams.get('userId');
+    var userName = urlParams.get('userName');
+
+    document.getElementById('user-id').textContent = userId;
+    document.getElementById('user-name').textContent = userName;
+  }
+
+  window.onload = displayLineUserInfo;
+
+
+
+
+    // JavaScript 函數來更改按鈕的顏色和文字
+    function changeColorAndTextDN() {
+        var button = document.getElementById('loginButton');
+        
+            // 更改按鈕的顏色
+            button.style.backgroundColor = '#008cba'; // 你想要的顏色
+
+            // 更改按鈕的文字
+            button.innerHTML = '登出';       
+        
+        // 在這裡你可以添加其他想要的操作，例如發送請求等等
+    }
+
+   
+
+    // <登入系統============================================================================================登入系統>
+    document.getElementById('loginFormA').addEventListener('submit', function (event) {
+      event.preventDefault(); // 防止表單提交
+
+      // 獲取表單值
+      var phone = document.getElementById('phone').value;
+      var password = document.getElementById('password').value;
+
+
+      // 調用 Google Apps Script 函數驗證用戶
+      google.script.run.withSuccessHandler(loginUser).loginUser(phone, password);
+
+      google.script.run.withSuccessHandler().getData(phone);
+
+      google.script.run.withSuccessHandler().lookupOrder()
+    });
+
+    function loginSuccess(memberData) {
+  // 在這裡處理會員資料
+  const memberName = memberData.name; // 假設 memberData 包含會員姓名
+  const memberPhone = memberData.phone; // 假設 memberData 包含會員電話
+
+  // 更新頁面上的會員資訊
+  document.getElementById('member-name').textContent = `會員: ${memberName}`;
+  document.getElementById('phone').textContent = `會員ID: ${memberPhone}`;
+
+  // 或者執行其他操作,例如獲取會員訂單歷史等
+}
+
+    function loginUser(result) {
+      if (result) {
+        // 顯示成功消息
+        document.getElementById('loginFormB').style.display = 'block';
+        document.getElementById('loginFormA').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'none';
+
+        
+       // 更改登入按鈕的文字為 "登出"
+    document.getElementById('loginButton').textContent = '登出';
+
+        alert('🎉登入成功！');
+        google.script.run.withSuccessHandler(loginSuccess).getData(phone, password);
+      } else {
+
+        顯示錯誤消息
+        alert('❗️錯誤的帳號或密碼');
+      }
+    }
+// <登入系統============================================================================================登入系統>
+
+    function allonclickA() {
+      
+      // 獲取表單值
+      var phone = document.getElementById('phone').value;
+
+        document.getElementById('loginFormB').style.display = 'none';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'block';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'none';
+
+    }
+
+    function allonclickB() {
+        document.getElementById('loginFormB').style.display = 'none';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'block';
+        document.getElementById('order-lookup').style.display = 'none';
+    }
+
+
+    function allonclickC() {
+        document.getElementById('loginFormB').style.display = 'none';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'block';
+    }
+
+    function allonclickD() {
+      document.getElementById('loginFormB').style.display = 'none';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'none';
+    }
+    function allonclickE() {
+      document.getElementById('loginFormB').style.display = 'none';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'none';
+    }
+
+    function allonclickF() {
+      document.getElementById('loginFormB').style.display = 'block';
+        document.getElementById('loginFormB2').style.display = 'none';
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'none';
+        document.getElementById('member-name').style.display = 'none';        
+        document.getElementById('products').style.display = 'none';
+        document.getElementById('cart').style.display = 'none';
+        document.getElementById('order-lookup').style.display = 'none';
+    }
+
+    //  <登入系統============================================================================================登入系統>
+
+    //  <註冊系統============================================================================================註冊系統>
+    function allonclick() {
+      getValuesA();
+      }
+   
+
+    function getValuesA() {
+      const getValue = (id) => document.getElementById(id).value;
+      // const set1 = getValue('set1');
+      // const set2 = getValue('set2');
+      // const set3 = getValue('set3');
+      const set4 = getValue('set4');
+      const set5 = getValue('set5');
+
+      const rowData = { set4, set5 };
+
+      // 检查电话号码是否重复
+      var phoneN = "H" + rowData.set4;
+      google.script.run.withSuccessHandler(function (isDuplicate) {
+        if (isDuplicate) {
+          alert("該電話號碼已被註冊過，請使用其他號碼。");
+        } else {
+          const isConfirmed = confirm("確定要註冊？");
+          if (isConfirmed) {
+            google.script.run.withSuccessHandler(function () {
+              document.getElementById("signupForm").reset();
+              getRegistrationList();
+              updateItemDetails();
+              showData();
+            }).addData(rowData);
+            google.script.run.checkDuplicatePhoneNumber(phoneN)
+            document.getElementById('loginFormA').style.display = 'block';
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('products').style.display = 'none';
+            document.getElementById('cart').style.display = 'none';
+            document.getElementById('order-lookup').style.display = 'none';
+          }
+        }
+      }).checkDuplicatePhoneNumber(phoneN);
+    }
+
+
+
+
+    function getValuesB() {
+      const getValueB = (id) => document.getElementById(id).value;
+      const sport1 = getValueB('sport1');
+      const sport2 = getValueB('sport2');
+      const sport3 = getValueB('sport3');
+      const sport4 = getValueB('sport4');
+      const sport5 = getValueB('sport5');
+
+      if (!sport1 || !sport2 || !sport3 || !sport4 || !sport5) {
+        alert("請填寫所有欄位。");
+        return;
+      }
+
+
+      const rowData2 = { sport1, sport2, sport3, sport4, sport5 };
+      const isConfirmed = confirm("確定註冊嗎？");
+
+      if (isConfirmed) {
+        google.script.run.withSuccessHandler(function () {
+          document.getElementById("sportFormA").reset();
+        }).addDataB(rowData2);
+      }
+    }
+
+
+    function getRegistrationList() {
+      google.script.run.withSuccessHandler(function (signupList) {
+        displaySignupList(signupList);
+      }).getSignupList();
+    }
+
+    function displaySignupList(signupList) {
+      var table = document.getElementById('signupTable');
+      table.innerHTML = '';  // 清空表格
+
+      signupList.forEach(row => {
+        var newRow = table.insertRow();
+        row.forEach(cell => {
+          var newCell = newRow.insertCell();
+          newCell.textContent = cell;
+        });
+      });
+    }
+
+
+
+
+
+    //  <註冊系統============================================================================================註冊系統>
+
+
+    // 原始產品數據
+    var allProducts = [];
+     // 購物車項目
+    var cartItems = [];
+
+
+    // 從 GAS 獲取產品數據
+    google.script.run.withSuccessHandler(function (products) {
+      allProducts = products;
+      
+      displayProducts(products);
+    }).getProducts();
+
+    
+function displayProducts(products) {
+  var html = '';
+  for (var i = 0; i < products.length; i++) {
+    var product = products[i];
+    var isProductInCart = cartItems.some(item => item.id === product.id);
+    html += '<div class="product">';
+    html += '<img id="' + product.image + '" src="' + product.image + '" onclick="toggleImageSize(\'' + product.image + '\')" style="color:#0000ff; max-width: 50%; height: auto; cursor: pointer;" >';
+    html += '<h3 style="font-size: 25px; color: #0000cd; line-height: 0.5;">' + product.name + '</h3>';
+    html += '<h3 style="font-size: 25px; color: #0000cd; line-height: 0.5;">' + product.spsetA + '</h3>';
+    html += '<p style="font-size: 25px; color: #0000cd; line-height: 0.5;">單價: $' + product.price + '</p>';
+    html += '<button id="addToCartBtn' + product.id + '" onclick="addToCart(' + product.id + ')" style="font-size: 25px; max-width: 350px; background-color: #ffa500; color: white; border-radius: 8px;">加入購物車</button>';
+    html += '<button onclick="allonclickB()" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #3cb371; color: #333; border-radius: 8px;">前往購物車</button>';
+    html += '</div>';
+  }
+  document.getElementById('products').innerHTML = html;
+}
+
+function addToCart(productId) {
+  var product = allProducts.find(function (p) { return p.id == productId; });
+  if (product) {
+    product.quantity = 1;
+    cartItems.push(product);
+    updateCart();
+
+    // 获取对应产品的按钮元素
+    var button = document.getElementById('addToCartBtn' + product.id);
+    if (button) {
+      button.innerHTML = '已加入購物車';
+      button.disabled = true;
+      button.classList.add('added');
+      button.style.backgroundColor = '#ff1493';
+    }
+  }
+}
+
+
+function removeFromCart(index) {
+  var product = cartItems[index];
+  var productId = product.id;
+  cartItems.splice(index, 1);
+  updateCart();
+
+  // 從被選擇的產品中移除 selected 類
+  var productElement = document.getElementById('product' + productId);
+  if (productElement) {
+    productElement.classList.remove('selected');
+  }
+
+  // 獲取對應產品的按鈕元素
+  var button = document.getElementById('addToCartBtn' + productId);
+
+  // 如果找到了按鈕元素
+  if (button) {
+    // 更新按鈕文本為"加入購物車"
+    button.innerHTML = '加入購物車';
+    button.disabled = false; // 啟用按鈕
+    button.classList.remove('added'); // 移除樣式類
+    button.style.backgroundColor = '#ffa500';
+  }
+}
+
+    function updateQuantity(index, quantity) {
+      cartItems[index].quantity = parseInt(quantity);
+      updateCart();
+    }
+
+
+var originalSize = false;
+
+    function toggleImageSize(imageId) {
+      var img = document.getElementById(imageId); // 獲取點擊的圖像元素
+      if (originalSize) {
+        img.style.maxWidth = "100%"; // 將圖片的最大寬度設置為屏幕寬度
+        img.style.height = "auto"; // 讓圖片的高度隨比例自動調整
+      } else {
+        img.style.maxWidth = "50%"; // 將圖片的最大寬度設置為一半屏幕寬度
+        img.style.height = "auto"; // 讓圖片的高度隨比例自動調整
+      }
+      originalSize = !originalSize;
+    }
+    
+
+    function updateCart() {
+      var cartItemsHtml = '';
+      var total = 0;
+
+      if (cartItems.length === 0) {
+        cartItemsHtml = '<li style="font-size: 25px; color: #0000cd; line-height: 0.5;">購物車是空的</li>';
+      } else {
+        for (var i = 0; i < cartItems.length; i++) {
+          var item = cartItems[i];
+          var itemQuantity = item.quantity || 1; // 使用 quantity 或預設值 1
+          var itemTotal = Math.round(item.price) * itemQuantity;
+          total += itemTotal;
+
+          cartItemsHtml += '<li>';
+          cartItemsHtml += `<h4 style="font-size: 25px; color: #0000cd; line-height: 0.5;">✅${item.id} + ${item.name} </h4>`;
+          cartItemsHtml += `<h4 style="font-size: 25px; color: #0000cd; line-height: 0.5;">🟠單價 : ${Math.round(item.price)}</h4>`;         
+          cartItemsHtml +=  '<span style="font-size: 25px; color: #0000cd; line-height: 0.5; font-weight: bold;">🟡訂購數量: </span><input class="quantity-input" type="number" value="' + itemQuantity + '" onchange="updateQuantity(' + i + ', this.value)" style="font-size: 25px; color: #0000cd; line-height: 0.5; font-weight: bold;">';
+          cartItemsHtml += `<h4 style="font-size: 25px; color: #0000cd; line-height: 0.5;"> = $${Math.round(itemTotal.toFixed(2))}</h4>`; 
+          cartItemsHtml += '<button onclick="removeFromCart(' + i + ')" class="btn-btn-primary" style="font-size: 25px; max-width: 350px; background-color: #ff69b4; color: #333; border-radius: 8px;">刪除</button>';
+          cartItemsHtml += '<br>';
+          cartItemsHtml += '<br>';
+          cartItemsHtml += '</li>';
+        }
+      }
+
+      document.getElementById('cart-items').innerHTML = cartItemsHtml;
+      document.getElementById('total').innerHTML = '總計: $' + (Math.round(total.toFixed(2))); // 將 "Total" 改為 "總計"
+
+    }
+    // ➡️▶️⚠️👉🌸⭐️🌟✨☎️⏰🔋💵🔑🎁📒🗂️📚📍📌📝🔖📖✏️🩷
+    // ❤️🧡💛💚💙💜🖤🤍💗💓💞💝💘💖
+    // 🈶🈚️🉑🆚⭕️❌🈲🈵❗️‼️❓
+    // ❔❕🈯️✅❎✳️❇️➡️⬅️☑️
+    // 🔴🟠⚫️🟣🔵🟢🟡⚪️🟤
+    // 🔸🔹🔶🔷
+    // 🟩🟨🟧🟥🟦🟪⬛️🟫⬜️💬
+
+
+    function clearCart() {
+      // 清空購物車項目
+      cartItems = [];
+
+      // 更新購物車顯示
+      updateCart();
+    }
+
+
+    var nowTime = new Date();
+    var year = nowTime.getFullYear();
+    var month = append1Zero(nowTime.getMonth() + 1);
+    var date = append1Zero(nowTime.getDate());
+    var hours = append1Zero(nowTime.getHours());
+    var minutes = append1Zero(nowTime.getMinutes());
+    var prefixFileName2 = "訂單編號#" + year + month + date + hours + minutes;
+
+
+    function append1Zero(obj) {
+      if (obj < 10) { return "0" + obj.toString(); }
+      else { return obj.toString(); }
+    }
+
+
+// function saveCart() {
+//       if (cartItems.length > 0) {
+//         const currentOrderNumber = prefixFileName2;
+//         google.script.run.withSuccessHandler(function () {
+//           alert(`您的訂單已送出，訂單編號為 #${currentOrderNumber}`);
+//           orderNumber++; // 在這裡增加 orderNumber
+//         }).saveCartToSpreadsheet(cartItems, currentOrderNumber);
+//       } else {
+//         alert('購物車是空的');
+//       }
+//     }
+
+
+
+
+    function saveCart() {
+      var phone = document.getElementById('phone').value;
+      if (cartItems.length > 0) {
+        const currentOrderNumber = prefixFileName2;
+        var button = document.getElementById('btnbtnA1');
+    if (button) {
+      button.innerHTML = '訂單完成';
+      button.disabled = true;
+      button.classList.add('added');
+      button.style.backgroundColor = '#ff1493';
+    }
+        google.script.run.withSuccessHandler(function () {
+          
+          orderNumber++; // 在這裡增加 orderNumber
+        }).saveCartToSpreadsheet(cartItems, currentOrderNumber,phone);
+      } else {
+        alert('購物車是空的');
+      }
+    }
+
+
+
+    function lookupOrder() {
+      const orderNumber = document.getElementById('order-number-input').value;
+      if (orderNumber) {
+        google.script.run.withSuccessHandler(displayOrderDetails).getOrderDetails(orderNumber);
+      } else {
+        alert('請輸入會員ID');
+      }
+    }
+
+    function displayOrderDetails(orderDetails) {
+      let totalPrice = 0; // 儲存總金額的變數
+      updateCart(total);
+      const orderNumber = document.getElementById('order-number-input').value;
+      let html = '';
+      if (orderDetails) {
+        html += `<h4 style="font-size: 25px; color: #333;">⭕️ 會員ID: ${orderNumber} </h4>`;
+        for (let i = 0; i < orderDetails.length; i++) {
+          const item = orderDetails[i];
+          const subtotal = item[2] * item[3]; // 計算每項商品的小計
+          totalPrice += subtotal;
+
+          html += `<h4 style="font-size: 20px; color: #0000cd; line-height: 0.5;">📌 ${item[0]} :</h4>`;
+          html += `<h4 style="font-size: 20px; color: #0000cd; line-height: 0.5;">🟩 ${item[1]} :</h4>`;
+          html += `<h4 style="font-size: 20px; color: #0000cd; line-height: 0.5;">🟡 _ ${item[2]} x ${item[3]} = $ ${item[4]} <br> </h4>`;
+          html += `<div style="height: 0.5px;"></div>`;
+        }         
+        html += `<h4 style="font-size: 30px; color: #ff0000;">📝 總金額: $${totalPrice}</h4>`; // 顯示總金額
+      } else {
+        html += '<p>找不到訂單</p>';
+      }
+      document.getElementById('order-details').innerHTML = html;
+    }
+
+      function showOrders() {
+      var memberId = document.getElementById('memberId').value;
+      google.script.run.withSuccessHandler(displayOrders).getOrders(memberId);
+    }
+    
+    function displayOrders(orders) {
+      var ordersDiv = document.getElementById('orders');
+      ordersDiv.innerHTML = '';
+      
+      for (var orderId in orders) {
+        var orderDiv = document.createElement('div');
+        var orderHeader = document.createElement('h3');
+        orderHeader.textContent = '訂單編號: ' + orderId;
+        orderHeader.addEventListener('click', function() {
+          toggleOrderDetails(this);
+        });
+        orderDiv.appendChild(orderHeader);
+        
+        var orderDetails = document.createElement('div');
+        orderDetails.style.display = 'none';
+        var table = document.createElement('table');
+        var headerRow = document.createElement('tr');
+        ['品名', '單價', '數量', '合計'].forEach(function(header) {
+          var th = document.createElement('th');
+          th.textContent = header;
+          headerRow.appendChild(th);
+        });
+        table.appendChild(headerRow);
+        
+        orders[orderId].forEach(function(item) {
+          var row = document.createElement('tr');
+          var nameTd = document.createElement('td');
+          nameTd.textContent = item.name;
+          row.appendChild(nameTd);
+          var priceTd = document.createElement('td');
+          priceTd.textContent = item.price;
+          row.appendChild(priceTd);
+          var quantityTd = document.createElement('td');
+          quantityTd.textContent = item.quantity;
+          row.appendChild(quantityTd);
+          var totalTd = document.createElement('td');
+          totalTd.textContent = item.total;
+          row.appendChild(totalTd);
+          table.appendChild(row);
+        });
+        orderDetails.appendChild(table);
+        orderDiv.appendChild(orderDetails);
+        ordersDiv.appendChild(orderDiv);
+      }
+    }
+    
+    function toggleOrderDetails(header) {
+      var orderDetails = header.nextElementSibling;
+      if (orderDetails.style.display === 'none') {
+        orderDetails.style.display = 'block';
+      } else {
+        orderDetails.style.display = 'none';
+      }
+    }
+
+
+
+  function searchOrders() {
+       var memberID = document.getElementById('phone').value;
+    if (memberID == "6568728"){
+      google.script.run.withSuccessHandler(displayResults).getOrderData("H" + memberID);
+    }
+    else {      
+      google.script.run.withSuccessHandler(displayResultsB).getOrderData("H" + memberID);
+    }
+    }
+
+    function displayResults(data) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
+
+      if (data.length === 0) {
+        resultDiv.innerHTML = '沒有找到相關訂單';
+        return;
+      }
+
+      let html = '<table><tr><th>訂單編號(按壓即可展開明細)<br>繳費方式 / 確認<br>已確認收款</th><th>總金額</th>';
+      const orders = {};
+      data.forEach(order => {
+        if (!orders[order.orderId]) {
+          orders[order.orderId] = [];
+        }
+        orders[order.orderId].push(order);
+      });
+
+      Object.keys(orders).forEach(orderId => {
+        const totalAmount = orders[orderId].reduce((sum, order) => sum + order.total, 0);
+        const paymentMethod = orders[orderId][0].paymentMethod || "";
+        const paymentConfirmed = orders[orderId][0].paymentConfirmed || false;
+        html += `<tr>
+                   <td>
+                   <div>
+                       <span style="font-size: 25px; max-width: 350px; background-color: #00bfff; color: black; border-radius: 8px; line-height: 1.6; text-decoration: none;">${orderId}</span>
+                       <button onclick="toggleDetails(event, '${orderId}')" style="font-size: 20px; margin-left: 10px; background-color: #007bff; color: white; border-radius: 8px;">明細</button>
+                     </div>                  
+                   <br>
+                    <input type="text" id="paymentMethod-${orderId}" value="${paymentMethod}" placeholder="輸入繳費方式" style="font-size: 25px; color: #0000cd; width: 150px; line-height: 1.6; font-weight: bold; border-radius: 8px;">
+                    <br>
+                    <br>
+                    <button onclick="savePaymentMethod('${orderId}')" style="font-size: 25px; max-width: 350px; background-color: #ffa500; color: white; border-radius: 8px;" line-height: 1.6>${paymentMethod ? '已繳費請確認' : '確認支付方式'}</button>
+                   <br>
+                   <br>
+                     <button onclick="confirmPayment('${orderId}')" style="font-size: 25px; max-width: 350px; background-color: #ff00ff; color: white; border-radius: 8px;" line-height: 1.6>${paymentConfirmed ? '已確認' : '請確認收款'}</button>
+                   </td>
+                   
+                   <td>${totalAmount}</td>                                     
+                 </tr>
+                 <tr id="details-${orderId}" class="order-details">
+                   <td colspan="5">
+                     <table>
+                       <tr>
+                         <th>品名</th>
+                         <th>單價</th>
+                         <th>數量</th>
+                         <th>合計</th>
+                       </tr>`;
+        orders[orderId].forEach(order => {
+          html += `<tr>
+                     <td>${order.productName}</td>
+                     <td>${order.price}</td>
+                     <td>${order.quantity}</td>
+                     <td>${order.total}</td>
+                   </tr>`;
+        });
+        html += `</table>
+                   </td>
+                 </tr>`;
+      });
+      html += '</table>';
+
+      resultDiv.innerHTML = html;
+    }
+
+
+    
+    function displayResultsB(data) {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
+
+      if (data.length === 0) {
+        resultDiv.innerHTML = '沒有找到相關訂單';
+        return;
+      }
+
+      let html = '<table><tr><th>訂單編號(按壓即可展開明細)<br>繳費方式 / 確認<br>已確認收款</th><th>總金額</th>';
+      const orders = {};
+      data.forEach(order => {
+        if (!orders[order.orderId]) {
+          orders[order.orderId] = [];
+        }
+        orders[order.orderId].push(order);
+      });
+
+      Object.keys(orders).forEach(orderId => {
+        const totalAmount = orders[orderId].reduce((sum, order) => sum + order.total, 0);
+        const paymentMethod = orders[orderId][0].paymentMethod || "";
+        const paymentConfirmed = orders[orderId][0].paymentConfirmed || false;
+        html += `<tr>
+                   <td>
+                   <div>
+                       <span style="font-size: 25px; max-width: 350px; background-color: #00bfff; color: black; border-radius: 8px; line-height: 1.6; text-decoration: none;">${orderId}</span>
+                       <button onclick="toggleDetails(event, '${orderId}')" style="font-size: 20px; margin-left: 10px; background-color: #007bff; color: white; border-radius: 8px;">明細</button>
+                     </div>                  
+                   <br>
+                    <input type="text" id="paymentMethod-${orderId}" value="${paymentMethod}" placeholder="輸入繳費方式" style="font-size: 25px; color: #0000cd; width: 150px; line-height: 1.6; font-weight: bold; border-radius: 8px;">
+                    <br>
+                    <br>
+                    <button onclick="savePaymentMethod('${orderId}')" style="font-size: 25px; max-width: 350px; background-color: #ffa500; color: white; border-radius: 8px;" line-height: 1.6>${paymentMethod ? '已繳費請確認' : '確認支付方式'}</button>
+                   </td>
+                   
+                   <td>${totalAmount}</td>                                     
+                 </tr>
+                 <tr id="details-${orderId}" class="order-details">
+                   <td colspan="5">
+                     <table>
+                       <tr>
+                         <th>品名</th>
+                         <th>單價</th>
+                         <th>數量</th>
+                         <th>合計</th>
+                       </tr>`;
+        orders[orderId].forEach(order => {
+          html += `<tr>
+                     <td>${order.productName}</td>
+                     <td>${order.price}</td>
+                     <td>${order.quantity}</td>
+                     <td>${order.total}</td>
+                   </tr>`;
+        });
+        html += `</table>
+                   </td>
+                 </tr>`;
+      });
+      html += '</table>';
+
+      resultDiv.innerHTML = html;
+    }
+
+
+
+
+
+    function toggleDetails(event, orderId) {
+      event.preventDefault();
+      const detailsRow = document.getElementById(`details-${orderId}`);
+      if (detailsRow.style.display === 'none' || detailsRow.style.display === '') {
+        detailsRow.style.display = 'table-row';
+      } else {
+        detailsRow.style.display = 'none';
+      }
+    }
+
+    function savePaymentMethod(orderId) {
+      const paymentMethod = document.getElementById(`paymentMethod-${orderId}`).value;
+      google.script.run.savePaymentMethod(orderId, paymentMethod);
+      alert('繳費方式已保存');
+       searchOrders();
+    }
+
+    function confirmPayment(orderId) {
+      google.script.run.withSuccessHandler(() => {
+        alert('已確認收款');
+        searchOrders();
+      }).confirmPayment(orderId);
+    }
+ 
+
+  </script>
+  </body>
 
 </html>
